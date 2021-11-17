@@ -17,6 +17,7 @@ navbar = dbc.Navbar(
                     # dbc.NavLink("France", href="/covidfrance",style={'color':'white'}),
                     # #Navlink France
                     # dbc.NavLink("SEAIRD modelisation", href="/modelisation",style={'color':'white'}),
+                    dbc.NavLink("Acceuil", href="/home",style={'color':'white'}),
                     dbc.NavLink("Joueur", href="/joueur",style={'color':'white'}),
                     dbc.NavLink("Club", href="/club",style={'color':'white'}),
                     dbc.NavLink("Equipe Nationale", href="/nation",style={'color':'white'}),

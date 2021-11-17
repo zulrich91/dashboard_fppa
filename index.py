@@ -6,6 +6,7 @@ from pages.header import navbar
 from pages.joueur import layout_joueur
 from pages.club import layout_club
 from pages.nation import layout_nation
+from pages.home import layout_home
 from app import app,server
 
 
@@ -20,7 +21,9 @@ app.layout = html.Div([
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname=='/joueur' or pathname=='/':
+    if pathname=='/home' or pathname=='/':
+        return layout_home
+    elif pathname=='/joueur':
         return layout_joueur
     elif pathname=='/club':
         return layout_club
@@ -29,4 +32,4 @@ def display_page(pathname):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False, host='0.0.0.0',port=5002)
+    app.run_server(debug=True, host='0.0.0.0',port=5002)

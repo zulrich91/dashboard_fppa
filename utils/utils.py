@@ -2,6 +2,7 @@ import plotly.graph_objects as go
 import unidecode
 import dash_table
 import plotly.express as px
+import pandas as pd
 
 def unidecodePlayersName(name):
     players_name = unidecode.unidecode(name)
@@ -17,48 +18,66 @@ def get_selected_players(df, player1, player2):
 
 def get_years_of_interest(df, year_str='-2021'):
     df = df[df['Annees'].str.contains(year_str, na=False)]
-    return df.values.tolist()[0][4:]
+    print(df.columns)
+    return df
+    #return df.values.tolist()[0][5:10]
 
 def players_build_polar_chart(df,player1,player2):
-    categories = df.columns[4:]
+    #categories = df.columns[5:10]
+    # categories = ['Goals', 'decisives','Dribbles', 'Passes complétées', 'defenses', 'Position', 'Joueur' ]
+    categories = ['Goals', 'decisives','Dribbles', 'defenses']
+    #print(categories)
     selected_player1, selected_player2 = get_selected_players(df,player1,player2)
-    fig = go.Figure()
+    # print(selected_player1)
+    # df=pd.DataFrame([selected_player1, selected_player2],columns=categories)
 
-    fig.add_trace(go.Scatterpolar(
-        r=selected_player1,
-        theta=categories,
-        fill='toself',
-        name=player1
-    ))
+    # print(df)
+    # print(selected_player2)
+    df = pd.concat([selected_player1,selected_player2])
+    r_df= df[['Goals', 'decisives','Dribbles', 'defenses', 'Position', 'Joueur' ]].reset_index(drop=True)
+    # print(r_df)
+    r_df.columns = ['Buts', 'Decisives','Dribbles', 'Defenses', 'Position', 'Joueur']
+    categories1= ['Buts', 'Decisives','Dribbles', 'Defenses']
+    bars = px.bar(r_df, x="Joueur", y=categories1).update_layout(xaxis={'title':'Joueur'},yaxis={"title":"Valeur"})
+    fig = bars
+    # fig = go.Figure()
 
-    fig.add_trace(go.Scatterpolar(
-        r=selected_player2,
-        theta=categories,
-        fill='toself',
-        name=player2
-    ))
+    # fig.add_trace(go.Scatterpolar(
+    #     r=selected_player1,
+    #     theta=categories,
+    #     fill='toself',
+    #     name=player1
+    # ))
 
-    fig.update_layout(
-        polar=dict(
-            radialaxis=dict(
-            visible=True,
-            )),
-        showlegend=True)
+    # fig.add_trace(go.Scatterpolar(
+    #     r=selected_player2,
+    #     theta=categories,
+    #     fill='toself',
+    #     name=player2
+    # ))
+
+    # fig.update_layout(
+    #     polar=dict(
+    #         radialaxis=dict(
+    #         visible=True,
+    #         )),
+    #     showlegend=True)
     return fig
+
 
 def get_player_figure(player, player_position, player_attack_df, player_defense_df):
     if "FW" in player_position.upper():
         player_fig =  px.line(player_attack_df[player_attack_df['Joueur']==player], 
-                                x='Annees', y='Decisives', title=player+" Attacking stats")
+                                x='Annees', y='Decisives', title=player+": Statistique attaque")
     elif "MF" in player_position.upper():
         player_fig =  px.line(player_defense_df[player_defense_df['Joueur']==player], 
-                                x='Annees', y='Balles recuperees', title=player+" Balles recuperees")
+                                x='Annees', y='Balles recuperees', title=player+": Balles recuperées")
     elif "DF" in player_position.upper():
         player_fig = px.line(player_defense_df[player_defense_df['Joueur']==player], 
-                                x='Annees', y='Tirs arretes',title=player+ " Tirs arretes")
+                                x='Annees', y='Tirs bloqués',title=player+ ": Statistique defensive")
     elif "GK" in player_position.upper():
         player_fig = px.line(player_defense_df[player_defense_df['Joueur']==player], 
-                                x='Annees', y='Tirs arretes',title=player+ " Tirs arretes") 
+                                x='Annees', y='Tirs bloqués',title=player+ ": Tirs bloqués") 
     else:
         player_fig = "Undefined Position: "+ player_position + ": for "+player
     return player_fig
@@ -118,15 +137,3 @@ def generate_players_data_table2(player_info):
                                             'whiteSpace': 'normal' ,
                                             "width":"40px"})
     return table
-
-
-
-                        # html.P(["Player: ", player1_info['Joueur'].values[0]]),
-                        # html.P(["Nationality: ", player1_info['Lieu de naissance'].values[0].split(",")[-1]]),
-                        # html.P(["Nationality: ", player1_info['Lieu de naissance'].values[0].split(",")[-1]]),
-                        # html.P(['Club: ', player1_info['Club'].values[0]]),
-                        # html.P(['Age: ', player1_info['Age'].values[0]]),
-                        # html.P(["Position: ", player1_info['Position'].values[0]]),
-                        # html.P(["Prefered Leg: ", player1_info["Pied fort"].values[0]]),
-                        # html.P(['Height: ', player1_info["Taille"].values[0]]),
-                        # html.P(['Weight: ', player1_info["Poid"].values[0]]),
